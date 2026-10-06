@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Growth Dashboard</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        dark: {
+                            900: '#0f172a', // Main BG
+                            800: '#1e293b', // Card BG
+                            700: '#334155', // Borders
+                        },
+                        accent: {
+                            500: '#6366f1', // Indigo
+                            400: '#818cf8', // Indigo light
+                            success: '#10b981' // Emerald
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Custom Checkbox Styles */
+        .custom-checkbox {
+            appearance: none;
+            background-color: transparent;
+            margin: 0;
+            font: inherit;
+            color: currentColor;
+            width: 1.5em;
+            height: 1.5em;
+            border: 2px solid #6366f1;
+            border-radius: 0.5em;
+            display: grid;
+            place-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .custom-checkbox::before {
+            content: "";
+            width: 0.85em;
+            height: 0.85em;
+            transform: scale(0);
+            transition: 120ms transform ease-in-out;
+            box-shadow: inset 1em 1em white;
+            background-color: white;
+            transform-origin: center;
+            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+        }
+
+        .custom-checkbox:checked {
+            background-color: #10b981;
+            border-color: #10b981;
+        }
+
+        .custom-checkbox:checked::before {
+            transform: scale(1);
+        }
+
+        /* Smooth tab transitions */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Item completed state */
+        .completed-text {
+            color: #64748b;
+            text-decoration: line-through;
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen pb-12">
+
+    <header class="sticky top-0 z-10 bg-dark-900/90 backdrop-blur-md border-b border-dark-700 pt-6 pb-4 px-4 shadow-md">
+        <div class="max-w-md mx-auto">
+            <h1 class="text-2xl font-bold text-white mb-4 tracking-tight">Focus & Growth</h1>
+            
+            <!-- Tab Controls -->
+            <div class="flex bg-dark-800 p-1 rounded-xl">
+                <button onclick="switchTab('routine')" id="tab-routine" class="flex-1 py-2 px-4 rounded-lg text-sm font-semibold transition-all duration-200 bg-accent-500 text-white shadow">
+                    Daily Routine
+                </button>
+                <button onclick="switchTab('curriculum')" id="tab-curriculum" class="flex-1 py-2 px-4 rounded-lg text-sm font-semibold transition-all duration-200 text-slate-400 hover:text-white">
+                    10-Week Plan
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-md mx-auto px-4 mt-6">
+        
+        <!-- TAB 1: DAILY ROUTINE -->
+        <div id="routine" class="tab-content active">
+            <h2 class="text-xl font-semibold mb-6 text-slate-200">Execution Schedule</h2>
+            
+            <div class="relative border-l-2 border-dark-700 ml-3 md:ml-4 space-y-8 pb-4">
+                
+                <!-- Timeline Item -->
+                <div class="relative pl-6">
+                    <div class="absolute -left-[9px] top-1 h-4 w-4 rounded-full border-2 border-dark-900 bg-slate-400"></div>
+                    <div class="text-xs font-bold text-accent-400 mb-1 tracking-wider">7:30 AM</div>
+                    <h3 class="text-base font-medium text-white">Wake up & Morning Buffer</h3>
+                    <p class="text-sm text-slate-400 mt-1">Hydrate, sunlight, no screens.</p>
+                </div>
+
+                <!-- Timeline Item -->
+                <div class="relative pl-6">
+                    <div class="absolute -left-[9px] top-1 h-4 w-4 rounded-full border-2 border-dark-900 bg-slate-400"></div>
+                    <div class="text-xs font-bold text-accent-400 mb-1 tracking-wider">8:15 AM</div>
+                    <h3 class="text-base font-medium text-white">Freshen up & Breakfast</h3>
+                </div>
+
+                <!-- Timeline Item (Action) -->
+                <div class="relative pl-6">
+                    <div class="absolute -left-[11px] top-1 h-5 w-5 rounded-full border-2 border-dark-900 bg-accent-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]"></div>
+                    <div class="text-xs font-bold text-accent-400 mb-1 tracking-wider">9:00 AM</div>
+                    <h3 class="text-base font-medium text-white">Job Applications</h3>
+                    <p class="text-sm text-slate-400 mt-1 leading-relaxed">Submit tailored applications for Treasury, FP&A, and Financial Analyst roles.</p>
+                </div>
+
+                <!-- Timeline Item -->
+                <div class="relative pl-6">
+                    <div class="absolute -left-[9px] top-1 h-4 w-4 rounded-full border-2 border-dark-900 bg-emerald-400"></div>
+                    <div class="text-xs font-bold text-emerald-400 mb-1 tracking-wider">11:00 AM</div>
+                    <h3 class="text-base font-medium text-white">Screen-Free Reset</h3>
+                    <p class="text-sm text-slate-400 mt-1">Step away from desk completely.</p>
+                </div>
+
+                <!-- Timeline Item (Deep Work) -->
+                <div class="relative pl-6 bg-dark-800/50 p-4 rounded-xl ml-4 border border-dark-700">
+                    <div class="absolute -left-[25px] top-5 h-4 w-4 rounded-full border-2 border-dark-900 bg-accent-500"></div>
+                    <div class="text-xs font-bold text-accent-400 mb-1 tracking-wider">11:30 AM</div>
+                    <h3 class="text-base font-medium text-white">Deep Work Block 1</h3>
+                    <p class="text-sm text-slate-400 mt-1">BMC / BIDA Concepts.</p>
+                </div>
+
+                <!-- Timeline Item -->
+                <div class="relative pl-6">
+                    <div class="absolute -left-[9px] top-1 h-4 w-4 rounded-full border-2 border-dark-900 bg-slate-400"></div>
+                    <div class="text-xs font-bold text-accent-400 mb-1 tracking-wider">1:00 PM</div>
+                    <h3 class="text-base font-medium text-white">Lunch & Reset</h3>
+                </div>
+
+                <!-- Timeline Item (Deep Work) -->
+                <div class="relative pl-6 bg-dark-800/50 p-4 rounded-xl ml-4 border border-dark-700">
+                    <div class="absolute -left-[25px] top-5 h-4 w-4 rounded-full border-2 border-dark-900 bg-accent-500"></div>
+                    <div class="text-xs font-bold text-accent-400 mb-1 tracking-wider">2:00 PM</div>
+                    <h3 class="text-base font-medium text-white">Deep Work Block 2</h3>
+                    <p class="text-sm text-slate-400 mt-1">SQL Syntax & Active Practice.</p>
+                </div>
+
+                <!-- Timeline Item -->
+                <div class="relative pl-6">
+                    <div class="absolute -left-[9px] top-1 h-4 w-4 rounded-full border-2 border-dark-900 bg-emerald-400"></div>
+                    <div class="text-xs font-bold text-emerald-400 mb-1 tracking-wider">3:30 PM</div>
+                    <h3 class="text-base font-medium text-white">Rest + Breathe</h3>
+                    <p class="text-sm text-slate-400 mt-1">90 minutes to completely decompress.</p>
+                </div>
+
+                <!-- Timeline Item -->
+                <div class="relative pl-6">
+                    <div class="absolute -left-[9px] top-1 h-4 w-4 rounded-full border-2 border-dark-900 bg-slate-400"></div>
+                    <div class="text-xs font-bold text-accent-400 mb-1 tracking-wider">5:00 PM</div>
+                    <h3 class="text-base font-medium text-white">Meeting</h3>
+                </div>
+
+                <!-- Timeline Item -->
+                <div class="relative pl-6">
+                    <div class="absolute -left-[9px] top-1 h-4 w-4 rounded-full border-2 border-dark-900 bg-slate-400"></div>
+                    <div class="text-xs font-bold text-accent-400 mb-1 tracking-wider">6:00 PM</div>
+                    <h3 class="text-base font-medium text-white">Head to Work</h3>
+                </div>
+
+                <!-- Timeline Item -->
+                <div class="relative pl-6">
+                    <div class="absolute -left-[9px] top-1 h-4 w-4 rounded-full border-2 border-dark-900 bg-slate-400"></div>
+                    <div class="text-xs font-bold text-slate-400 mb-1 tracking-wider">11:00 PM</div>
+                    <h3 class="text-base font-medium text-slate-300">Home + Sleep</h3>
+                    <p class="text-sm text-slate-500 mt-1">Wind down, no tech.</p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- TAB 2: 10-WEEK PLAN -->
+        <div id="curriculum" class="tab-content">
+            <div class="flex justify-between items-end mb-6">
+                <h2 class="text-xl font-semibold text-slate-200">The 10-Week Sprint</h2>
+                <span id="progress-text" class="text-xs font-bold text-accent-400 bg-dark-800 py-1 px-2 rounded">0/10 Done</span>
+            </div>
+            
+            <div class="space-y-3" id="task-list">
+                <!-- Javascript will inject tasks here to keep HTML clean and avoid repetition -->
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Data for the 10-Week Plan
+        const weeksData = [
+            { id: 1, title: "Week 1: Quick Wins", desc: "Finish BMC & SQL Basics" },
+            { id: 2, title: "Week 2: SQL Mastery", desc: "Subqueries, CTEs, Window Functions" },
+            { id: 3, title: "Week 3: Data Modeling", desc: "BIDA Power Query, relationships" },
+            { id: 4, title: "Week 4: Visuals", desc: "Power BI charts, interactive reports" },
+            { id: 5, title: "Week 5: DAX Logic", desc: "Calculated columns, measures, time intelligence" },
+            { id: 6, title: "Week 6: Project 1", desc: "Financial Performance Dashboard" },
+            { id: 7, title: "Week 7: PL-300 Prep", desc: "Data Prep & Modeling domains" },
+            { id: 8, title: "Week 8: PL-300 Prep", desc: "Visualize Data & Workspaces domains, Mock Exams" },
+            { id: 9, title: "Week 9: Project 2", desc: "U.S. Macroeconomic Dashboard" },
+            { id: 10, title: "Week 10: Execution", desc: "Sit for the PL-300 Exam & Update Portfolio" }
+        ];
+
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabId).classList.add('active');
+            
+            // Update button styles
+            const btnRoutine = document.getElementById('tab-routine');
+            const btnCurriculum = document.getElementById('tab-curriculum');
+            
+            if (tabId === 'routine') {
+                btnRoutine.className = "flex-1 py-2 px-4 rounded-lg text-sm font-semibold transition-all duration-200 bg-accent-500 text-white shadow";
+                btnCurriculum.className = "flex-1 py-2 px-4 rounded-lg text-sm font-semibold transition-all duration-200 text-slate-400 hover:text-white";
+            } else {
+                btnCurriculum.className = "flex-1 py-2 px-4 rounded-lg text-sm font-semibold transition-all duration-200 bg-accent-500 text-white shadow";
+                btnRoutine.className = "flex-1 py-2 px-4 rounded-lg text-sm font-semibold transition-all duration-200 text-slate-400 hover:text-white";
+            }
+        }
+
+        // Initialize and Render 10-Week List
+        function initCurriculum() {
+            const taskList = document.getElementById('task-list');
+            // Retrieve saved progress from LocalStorage
+            const savedProgress = JSON.parse(localStorage.getItem('growthDashboardProgress')) || {};
+
+            weeksData.forEach(week => {
+                const isChecked = savedProgress[`week-${week.id}`] ? 'checked' : '';
+                const textClass = isChecked ? 'completed-text' : 'text-white';
+                const descClass = isChecked ? 'completed-text' : 'text-slate-400';
+
+                const html = `
+                    <label class="flex items-start bg-dark-800 p-4 rounded-xl border border-dark-700 cursor-pointer hover:bg-dark-700/50 transition-colors">
+                        <div class="flex-shrink-0 mt-1 mr-4">
+                            <input type="checkbox" class="custom-checkbox week-checkbox" data-id="${week.id}" ${isChecked}>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-base font-semibold ${textClass} title-text" id="title-${week.id}">${week.title}</h3>
+                            <p class="text-sm mt-1 leading-snug ${descClass} desc-text" id="desc-${week.id}">${week.desc}</p>
+                        </div>
+                    </label>
+                `;
+                taskList.insertAdjacentHTML('beforeend', html);
+            });
+
+            updateProgressText();
+            attachCheckboxListeners();
+        }
+
+        // Handle Checkbox Toggles
+        function attachCheckboxListeners() {
+            const checkboxes = document.querySelectorAll('.week-checkbox');
+            checkboxes.forEach(box => {
+                box.addEventListener('change', function() {
+                    const id = this.getAttribute('data-id');
+                    const titleEl = document.getElementById(`title-${id}`);
+                    const descEl = document.getElementById(`desc-${id}`);
+                    
+                    if (this.checked) {
+                        titleEl.classList.replace('text-white', 'completed-text');
+                        descEl.classList.replace('text-slate-400', 'completed-text');
+                    } else {
+                        titleEl.classList.replace('completed-text', 'text-white');
+                        descEl.classList.replace('completed-text', 'text-slate-400');
+                    }
+                    
+                    saveProgress();
+                    updateProgressText();
+                });
+            });
+        }
+
+        // Save to LocalStorage
+        function saveProgress() {
+            const checkboxes = document.querySelectorAll('.week-checkbox');
+            const progress = {};
+            checkboxes.forEach(box => {
+                const id = box.getAttribute('data-id');
+                progress[`week-${id}`] = box.checked;
+            });
+            localStorage.setItem('growthDashboardProgress', JSON.stringify(progress));
+        }
+
+        // Update top counter (e.g., "3/10 Done")
+        function updateProgressText() {
+            const checkboxes = document.querySelectorAll('.week-checkbox');
+            const total = checkboxes.length;
+            const completed = Array.from(checkboxes).filter(box => box.checked).length;
+            
+            const progressLabel = document.getElementById('progress-text');
+            progressLabel.textContent = `${completed}/${total} Done`;
+            
+            if (completed === total) {
+                progressLabel.classList.remove('text-accent-400');
+                progressLabel.classList.add('text-emerald-400');
+            } else {
+                progressLabel.classList.remove('text-emerald-400');
+                progressLabel.classList.add('text-accent-400');
+            }
+        }
+
+        // Run on load
+        window.addEventListener('DOMContentLoaded', () => {
+            initCurriculum();
+        });
+    </script>
+</body>
+</html>
