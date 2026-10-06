@@ -1,355 +1,201 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personal Growth Dashboard</title>
-    <!-- Load Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Load Inter Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        dark: {
-                            900: '#0f172a', // Main BG
-                            800: '#1e293b', // Card BG
-                            700: '#334155', // Borders
-                        },
-                        accent: {
-                            500: '#6366f1', // Indigo
-                            400: '#818cf8', // Indigo light
-                            success: '#10b981' // Emerald
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0f172a;
-            color: #f8fafc;
-            -webkit-tap-highlight-color: transparent;
-        }
-        
-        /* Custom Checkbox Styles */
-        .custom-checkbox {
-            appearance: none;
-            background-color: transparent;
-            margin: 0;
-            font: inherit;
-            color: currentColor;
-            width: 1.5em;
-            height: 1.5em;
-            border: 2px solid #6366f1;
-            border-radius: 0.5em;
-            display: grid;
-            place-content: center;
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Focus & Growth</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f1f5f9;--card:#fff;--line:#cbd5e1;--text:#0f172a;--mute:#64748b;--acc:#4f46e5;--acc2:#6366f1;--ok:#059669;--warn:#d97706;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f172a;--card:#1e293b;--line:#334155;--text:#f8fafc;--mute:#94a3b8;--acc:#6366f1;--acc2:#818cf8;--ok:#10b981;--warn:#fbbf24}}
+:root[data-theme="dark"]{--bg:#0f172a;--card:#1e293b;--line:#334155;--text:#f8fafc;--mute:#94a3b8;--acc:#6366f1;--acc2:#818cf8;--ok:#10b981;--warn:#fbbf24}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;-webkit-tap-highlight-color:transparent;padding-bottom:48px}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:16px 16px 12px}
+.wrap{max-width:460px;margin:0 auto}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+h1{font-size:22px;margin:0;letter-spacing:-.01em}
+.date{font-size:13px;color:var(--mute);margin-top:2px}
+.clock{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--acc2);text-align:right}
+.tabs{display:flex;background:var(--card);padding:4px;border-radius:12px;margin-top:12px;border:1px solid var(--line)}
+.tabs button{flex:1;padding:8px;border:0;border-radius:9px;background:none;color:var(--mute);font:600 14px inherit;font-family:inherit;cursor:pointer}
+.tabs button[aria-selected=true]{background:var(--acc);color:#fff}
+button:focus-visible,input:focus-visible{outline:2px solid var(--acc2);outline-offset:2px}
+main{padding:20px 16px}
+section{display:none}section.on{display:block}
+.now{background:var(--card);border:1px solid var(--acc);border-radius:14px;padding:14px;margin-bottom:22px}
+.now b{display:block;font-size:17px;margin:2px 0}
+.now small{color:var(--mute)}
+.bar{height:6px;background:var(--line);border-radius:6px;overflow:hidden;margin-top:10px}
+.bar i{display:block;height:100%;background:var(--acc2);width:0;transition:width .4s}
+ol{list-style:none;margin:0;padding:0 0 0 14px;border-left:2px solid var(--line)}
+.it{position:relative;padding:0 0 20px 22px;display:flex;gap:12px;align-items:flex-start}
+.it::before{content:"";position:absolute;left:-10px;top:3px;width:14px;height:14px;border-radius:50%;background:var(--mute);border:2px solid var(--bg)}
+.it.focus::before{background:var(--acc)}.it.rest::before{background:var(--ok)}
+.it.cur::before{width:18px;height:18px;left:-12px;top:1px;background:var(--acc2);box-shadow:0 0 0 4px color-mix(in srgb,var(--acc2) 30%,transparent)}
+.it.past .tx{opacity:.5}
+.tm{font-size:12px;font-weight:700;color:var(--acc2);letter-spacing:.03em}
+.tt{font-size:16px;font-weight:500;margin:1px 0}
+.tn{font-size:13px;color:var(--mute);line-height:1.45}
+.tx{flex:1}
+.badge{font-size:11px;font-weight:700;background:var(--acc);color:#fff;border-radius:6px;padding:2px 6px;margin-left:6px}
+.ck,.wk{appearance:none;width:24px;height:24px;flex:none;border:2px solid var(--line);background:var(--card);border-radius:8px;display:grid;place-content:center;cursor:pointer;margin:0}
+.ck:checked,.wk:checked{background:var(--ok);border-color:var(--ok)}
+.ck:checked::after,.wk:checked::after{content:"";width:12px;height:12px;background:#fff;clip-path:polygon(14% 44%,0 65%,50% 100%,100% 16%,80% 0,43% 62%)}
+.sum{display:flex;justify-content:space-between;font-size:13px;color:var(--mute);margin-bottom:8px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:16px}
+.panel label{font-size:13px;color:var(--mute);display:block;margin-bottom:6px}
+.panel input[type=date]{width:100%;padding:9px;border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--text);font:inherit;color-scheme:light dark}
+.wl{display:flex;flex-direction:column;gap:12px;margin-top:14px}
 
-        .custom-checkbox::before {
-            content: "";
-            width: 0.85em;
-            height: 0.85em;
-            transform: scale(0);
-            transition: 120ms transform ease-in-out;
-            box-shadow: inset 1em 1em white;
-            background-color: white;
-            transform-origin: center;
-            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
-        }
-
-        .custom-checkbox:checked {
-            background-color: #10b981;
-            border-color: #10b981;
-        }
-
-        .custom-checkbox:checked::before {
-            transform: scale(1);
-        }
-
-        /* Smooth tab transitions */
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.3s ease-out forwards;
-        }
-        .tab-content.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Item completed state */
-        .completed-text {
-            color: #64748b;
-            text-decoration: line-through;
-            transition: all 0.3s ease;
-        }
-    </style>
+details{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+details[open]{border-color:var(--acc2);box-shadow:0 0 0 1px var(--acc2)}
+summary{padding:14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;list-style:none;user-select:none}
+summary::-webkit-details-marker{display:none}
+.sum-left{flex:1}.sum-left h3{margin:0;font-size:16px;display:flex;align-items:center;gap:8px}
+.sum-left p{margin:4px 0 0;font-size:13px;color:var(--mute);line-height:1.4}
+.sum-right{font-size:13px;font-weight:600;color:var(--acc2);text-align:right;margin-left:10px;white-space:nowrap}
+.sum-right span{display:block;font-size:11px;color:var(--mute);font-weight:400;margin-top:2px}
+.day-list{padding:0 14px 14px;border-top:1px solid var(--line);background:var(--bg)}
+.day-item{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.day-item:last-child{border-bottom:0;padding-bottom:0}
+.day-text{flex:1;font-size:13px;line-height:1.4;color:var(--mute)}
+.day-text b{color:var(--text);font-size:14px;display:block;margin-bottom:2px}
+.tag{font-size:11px;font-weight:700;border-radius:6px;padding:2px 6px;color:#fff}
+.w-done summary{opacity:.7}.w-done h3{text-decoration:line-through}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
 </head>
-<body class="antialiased min-h-screen pb-12">
+<body>
+<header><div class="wrap">
+ <div class="top"><div><h1>Focus & Growth</h1><div class="date" id="date"></div></div><div class="clock" id="clock"></div></div>
+ <div class="tabs" role="tablist">
+  <button role="tab" id="t-routine" aria-selected="true" onclick="tab('routine')">Daily Routine</button>
+  <button role="tab" id="t-plan" aria-selected="false" onclick="tab('plan')">10-Week Plan</button>
+ </div>
+</div></header>
+<main class="wrap">
+ <section id="routine" class="on">
+  <div class="now" id="now"></div>
+  <div class="sum"><span>Today's checklist</span><span id="dcount"></span></div>
+  <ol id="tl"></ol>
+ </section>
+ <section id="plan">
+  <div class="panel">
+   <label for="start">Sprint start date</label>
+   <input type="date" id="start">
+   <div class="bar"><i id="pbar"></i></div>
+   <div class="sum" style="margin:8px 0 0"><span id="pstat"></span><span id="pexam"></span></div>
+  </div>
+  <div class="wl" id="wl"></div>
+ </section>
+</main>
+<script>
+var BLOCKS=[
+ {s:450,t:"Wake up & Morning Buffer",n:"Hydrate, sunlight, no screens.",k:"rest"},
+ {s:495,t:"Freshen up & Breakfast",n:"",k:""},
+ {s:540,t:"Job Applications",n:"Submit tailored applications for Treasury, FP&A, and Financial Analyst roles.",k:"focus"},
+ {s:660,t:"Screen-Free Reset",n:"Step away from desk completely.",k:"rest"},
+ {s:690,t:"Deep Work Block 1",n:"BMC / BIDA Concepts.",k:"focus"},
+ {s:780,t:"Lunch & Reset",n:"",k:""},
+ {s:840,t:"Deep Work Block 2",n:"SQL Syntax & Active Practice.",k:"focus"},
+ {s:930,t:"Rest + Breathe",n:"90 minutes to completely decompress.",k:"rest"},
+ {s:1020,t:"Meeting",n:"",k:""},
+ {s:1080,t:"Head to Work",n:"",k:""},
+ {s:1380,t:"Home + Sleep",n:"Wind down, no tech.",k:"rest"}
+];
+var WEEKS=[{"t": "Quick Wins & SQL Basics", "d": [{"n": "Mon", "x": "BMC Equities/Fixed Income & SQL SELECT, FROM, WHERE"}, {"n": "Tue", "x": "BMC Currencies/Portfolio & SQL Filtering/Sorting"}, {"n": "Wed", "x": "Claim BMC Certificate & SQL Aggregate Functions"}, {"n": "Thu", "x": "BIDA Intro Concepts & SQL Basic JOINs"}, {"n": "Fri", "x": "BIDA Relational Data & SQL Multiple JOINs"}, {"n": "Sat", "x": "Set up local SQL env & write active database queries (2 hrs)"}]}, {"t": "Advanced SQL Mastery", "d": [{"n": "Mon", "x": "SQL Subqueries (Theory & Practice)"}, {"n": "Tue", "x": "SQL CTEs (Theory & Practice)"}, {"n": "Wed", "x": "SQL Window Functions Intro (Theory & Practice)"}, {"n": "Thu", "x": "SQL Advanced Window Functions (Theory & Practice)"}, {"n": "Fri", "x": "SQL Data Cleaning Methods"}, {"n": "Sat", "x": "Clean and structure a messy dataset using pure SQL"}]}, {"t": "Data Modeling (Power Query)", "d": [{"n": "Mon", "x": "Power Query Interface & Importing Data"}, {"n": "Tue", "x": "Transforming Columns & Handling Nulls/Errors"}, {"n": "Wed", "x": "Merging & Appending Tables in PQ"}, {"n": "Thu", "x": "Star Schema Concepts: Fact vs Dimension Tables"}, {"n": "Fri", "x": "Modeling Relationships & Cross-filtering"}, {"n": "Sat", "x": "Build a clean, functioning data model with multiple tables"}]}, {"t": "Power BI Visuals", "d": [{"n": "Mon", "x": "Power BI Desktop Intro & Basic Charts"}, {"n": "Tue", "x": "Formatting Visuals & Conditional Formatting"}, {"n": "Wed", "x": "Slicers, Filters, & Sync Slicers"}, {"n": "Thu", "x": "Drill-through, Tooltips, & Page Navigation"}, {"n": "Fri", "x": "Bookmarks, Buttons, & Interactive Reporting"}, {"n": "Sat", "x": "Draft a basic interactive report from your modeled data"}]}, {"t": "DAX Logic", "d": [{"n": "Mon", "x": "Calculated Columns vs Measures & Basic Math"}, {"n": "Tue", "x": "Filter Context Explained (SUMX vs SUM)"}, {"n": "Wed", "x": "The CALCULATE function & modifying context"}, {"n": "Thu", "x": "Time Intelligence Intro (YTD, MTD, YoY)"}, {"n": "Fri", "x": "Date Tables & Advanced Time Intelligence"}, {"n": "Sat", "x": "Practice variance analysis & KPI generation using DAX"}]}, {"t": "Project 1: Financial Dashboard", "d": [{"n": "Mon", "x": "Scope project & Load Treasury/Cash Flow data in PQ"}, {"n": "Tue", "x": "Build Financial Data Model & Date Table"}, {"n": "Wed", "x": "Write DAX for Revenue, AP, AR, & Working Capital"}, {"n": "Thu", "x": "Write DAX for Bank Reconciliation & Variance"}, {"n": "Fri", "x": "Build Visuals & Format Executive Layout"}, {"n": "Sat", "x": "Polish dashboard layout and test cross-filtering"}]}, {"t": "PL-300 Prep (Data & Model)", "d": [{"n": "Mon", "x": "MS Learn: Prepare Data & Practice Questions"}, {"n": "Tue", "x": "MS Learn: Clean/Transform Data & Practice Questions"}, {"n": "Wed", "x": "MS Learn: Design Model & Practice Questions"}, {"n": "Thu", "x": "MS Learn: Optimize Model & Practice Questions"}, {"n": "Fri", "x": "MS Learn: DAX Calculations & Practice Questions"}, {"n": "Sat", "x": "Take a baseline PL-300 practice exam"}]}, {"t": "PL-300 Prep (Visuals & Workspaces)", "d": [{"n": "Mon", "x": "MS Learn: Create Reports & Usability"}, {"n": "Tue", "x": "MS Learn: Manage Workspaces & Datasets"}, {"n": "Wed", "x": "MS Learn: Row-Level Security (RLS)"}, {"n": "Thu", "x": "Review weak domains from previous mock exam"}, {"n": "Fri", "x": "Full PL-300 Mock Exam 1"}, {"n": "Sat", "x": "Review incorrect mock exam answers"}]}, {"t": "Project 2: Macroeconomic Dashboard", "d": [{"n": "Mon", "x": "Gather FRED Data (Inflation, Yields) & Load to BI"}, {"n": "Tue", "x": "Model Economic Data & Write DAX for Macro Trends"}, {"n": "Wed", "x": "Build Treasury Yield Curve & Interest Rate Visuals"}, {"n": "Thu", "x": "Build Inflation/Unemployment Tracking"}, {"n": "Fri", "x": "Final Formatting & Tooltip additions"}, {"n": "Sat", "x": "Finalize the macroeconomic dashboard for portfolio"}]}, {"t": "Execution & Certification", "d": [{"n": "Mon", "x": "Final DAX & Model Review"}, {"n": "Tue", "x": "Final Workspace & Security Review"}, {"n": "Wed", "x": "Relax & Light Exam Review"}, {"n": "Thu", "x": "SIT FOR THE PL-300 EXAM"}, {"n": "Fri", "x": "Add credentials to Resume & LinkedIn"}, {"n": "Sat", "x": "Celebrate & apply for Data/Treasury Analyst roles!"}]}];
+var openW={};
+var mem={};
+function sget(k,d){try{var v=localStorage.getItem(k);if(v!==null)return JSON.parse(v)}catch(e){}return k in mem?mem[k]:d}
+function sset(k,v){mem[k]=v;try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+var $=function(id){return document.getElementById(id)};
+function pad(n){return n<10?"0"+n:""+n}
+function iso(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
+function parse(s){var p=s.split("-");return new Date(+p[0],+p[1]-1,+p[2])}
+function addDays(d,n){var x=new Date(d.getFullYear(),d.getMonth(),d.getDate()+n);return x}
+function fmt(d){return d.toLocaleDateString(undefined,{month:"short",day:"numeric"})}
+function hm(m){m=m%1440;var h=Math.floor(m/60),mm=m%60,ap=h>=12?"PM":"AM";h=h%12||12;return h+":"+pad(mm)+" "+ap}
 
-    <header class="sticky top-0 z-10 bg-dark-900/90 backdrop-blur-md border-b border-dark-700 pt-6 pb-4 px-4 shadow-md">
-        <div class="max-w-md mx-auto">
-            <h1 class="text-2xl font-bold text-white mb-4 tracking-tight">Focus & Growth</h1>
-            
-            <!-- Tab Controls -->
-            <div class="flex bg-dark-800 p-1 rounded-xl">
-                <button onclick="switchTab('routine')" id="tab-routine" class="flex-1 py-2 px-4 rounded-lg text-sm font-semibold transition-all duration-200 bg-accent-500 text-white shadow">
-                    Daily Routine
-                </button>
-                <button onclick="switchTab('curriculum')" id="tab-curriculum" class="flex-1 py-2 px-4 rounded-lg text-sm font-semibold transition-all duration-200 text-slate-400 hover:text-white">
-                    10-Week Plan
-                </button>
-            </div>
-        </div>
-    </header>
+function tab(id){
+ ["routine","plan"].forEach(function(t){$(t).classList.toggle("on",t===id);$("t-"+t).setAttribute("aria-selected",t===id)});
+ sset("tab",id);
+}
 
-    <main class="max-w-md mx-auto px-4 mt-6">
-        
-        <!-- TAB 1: DAILY ROUTINE -->
-        <div id="routine" class="tab-content active">
-            <h2 class="text-xl font-semibold mb-6 text-slate-200">Execution Schedule</h2>
-            
-            <div class="relative border-l-2 border-dark-700 ml-3 md:ml-4 space-y-8 pb-4">
-                
-                <!-- Timeline Item -->
-                <div class="relative pl-6">
-                    <div class="absolute -left-[9px] top-1 h-4 w-4 rounded-full border-2 border-dark-900 bg-slate-400"></div>
-                    <div class="text-xs font-bold text-accent-400 mb-1 tracking-wider">7:30 AM</div>
-                    <h3 class="text-base font-medium text-white">Wake up & Morning Buffer</h3>
-                    <p class="text-sm text-slate-400 mt-1">Hydrate, sunlight, no screens.</p>
-                </div>
+/* ---------- Routine ---------- */
+function curIndex(min){
+ if(min<BLOCKS[0].s)return BLOCKS.length-1; // still in last night's sleep block
+ for(var i=BLOCKS.length-1;i>=0;i--)if(min>=BLOCKS[i].s)return i;
+ return 0;
+}
+function renderRoutine(){
+ var now=new Date(),min=now.getHours()*60+now.getMinutes(),ci=curIndex(min),today=iso(now);
+ var done=sget("done-"+today,{}),n=0;
+ var html="";
+ BLOCKS.forEach(function(b,i){
+  var cls="it "+b.k+(i===ci?" cur":"")+((i<ci&&min>=BLOCKS[0].s)?" past":"");
+  var on=done[i]?"checked":"";if(done[i])n++;
+  html+='<li class="'+cls+'"><div class="tx"><div class="tm">'+hm(b.s)+(i===ci?'<span class="badge">Now</span>':"")+'</div><div class="tt">'+b.t+'</div>'+(b.n?'<div class="tn">'+b.n+'</div>':"")+'</div><input type="checkbox" class="ck" aria-label="Mark '+b.t+' done" data-i="'+i+'" '+on+'></li>';
+ });
+ $("tl").innerHTML=html;
+ $("dcount").textContent=n+"/"+BLOCKS.length+" done";
+ var b=BLOCKS[ci],nx=BLOCKS[(ci+1)%BLOCKS.length];
+ var st=b.s,en=ci===BLOCKS.length-1?BLOCKS[0].s+1440:nx.s,m=min<BLOCKS[0].s&&ci===BLOCKS.length-1?min+1440:min;
+ var pct=Math.max(0,Math.min(100,(m-st)/(en-st)*100)),left=en-m;
+ $("now").innerHTML='<small>Right now</small><b>'+b.t+'</b><small>'+(left>=60?Math.floor(left/60)+" hr "+(left%60)+" min":left+" min")+' left · next: '+nx.t+' at '+hm(nx.s)+'</small><div class="bar"><i style="width:'+pct+'%"></i></div>';
+}
+$("tl").addEventListener("change",function(e){
+ var i=e.target.getAttribute("data-i");if(i===null)return;
+ var k="done-"+iso(new Date()),d=sget(k,{});
+ if(e.target.checked)d[i]=1;else delete d[i];
+ sset(k,d);renderRoutine();
+});
 
-                <!-- Timeline Item -->
-                <div class="relative pl-6">
-                    <div class="absolute -left-[9px] top-1 h-4 w-4 rounded-full border-2 border-dark-900 bg-slate-400"></div>
-                    <div class="text-xs font-bold text-accent-400 mb-1 tracking-wider">8:15 AM</div>
-                    <h3 class="text-base font-medium text-white">Freshen up & Breakfast</h3>
-                </div>
+/* ---------- Plan ---------- */
+function startDate(){var s=sget("start",null);if(!s){s=iso(new Date());sset("start",s)}return parse(s)}
+function renderPlan(){
+ var st=startDate(),today=new Date();today=new Date(today.getFullYear(),today.getMonth(),today.getDate());
+ var diff=Math.floor((today-st)/86400000),cw=diff<0?0:Math.floor(diff/7)+1;
+ var prog=sget("days",{}),total=0,done=0,html="";
+ $("start").value=iso(st);
+ WEEKS.forEach(function(w,i){
+  var id=i+1,a=addDays(st,i*7),b=addDays(a,5),wd=0;
+  var dh=w.d.map(function(d,di){
+   var k="w"+id+"d"+di;total++;if(prog[k]){done++;wd++}
+   return '<div class="day-item"><input type="checkbox" class="wk" aria-label="'+d.n+' week '+id+'" data-did="'+k+'" '+(prog[k]?"checked":"")+'><div class="day-text"><b>'+d.n+'</b>'+d.x+'</div></div>';
+  }).join("");
+  var full=wd===w.d.length,tag="";
+  if(id===cw)tag='<span class="tag" style="background:var(--acc)">This week</span>';
+  else if(cw>0&&id<cw&&!full)tag='<span class="tag" style="background:var(--warn)">Behind</span>';
+  var open=(i in openW)?openW[i]:id===cw;
+  html+='<details data-w="'+i+'" class="'+(full?"w-done":"")+'" '+(open?"open":"")+'><summary><div class="sum-left"><h3>Week '+id+tag+'</h3><p>'+w.t+'</p></div><div class="sum-right">'+wd+'/6 days<span>'+fmt(a)+' – '+fmt(b)+'</span></div></summary><div class="day-list">'+dh+'</div></details>';
+ });
+ $("wl").innerHTML=html;
+ $("pbar").style.width=(Math.round(done/total*100)||0)+"%";
+ $("pstat").textContent=done+"/"+total+" sprint days complete";
+ var dl=Math.round((addDays(st,69)-today)/86400000);
+ $("pexam").textContent=dl>0?"Sprint ends in "+dl+" days":dl===0?"Final day today":"Sprint ended "+fmt(addDays(st,69));
+}
+$("wl").addEventListener("toggle",function(e){var d=e.target;if(d.dataset&&d.dataset.w!==undefined)openW[d.dataset.w]=d.open},true);
+$("wl").addEventListener("change",function(e){
+ var k=e.target.getAttribute("data-did");if(!k)return;
+ var p=sget("days",{});p[k]=e.target.checked;sset("days",p);renderPlan();
+});
+$("start").addEventListener("change",function(e){if(e.target.value){sset("start",e.target.value);renderPlan()}});
 
-                <!-- Timeline Item (Action) -->
-                <div class="relative pl-6">
-                    <div class="absolute -left-[11px] top-1 h-5 w-5 rounded-full border-2 border-dark-900 bg-accent-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]"></div>
-                    <div class="text-xs font-bold text-accent-400 mb-1 tracking-wider">9:00 AM</div>
-                    <h3 class="text-base font-medium text-white">Job Applications</h3>
-                    <p class="text-sm text-slate-400 mt-1 leading-relaxed">Submit tailored applications for Treasury, FP&A, and Financial Analyst roles.</p>
-                </div>
-
-                <!-- Timeline Item -->
-                <div class="relative pl-6">
-                    <div class="absolute -left-[9px] top-1 h-4 w-4 rounded-full border-2 border-dark-900 bg-emerald-400"></div>
-                    <div class="text-xs font-bold text-emerald-400 mb-1 tracking-wider">11:00 AM</div>
-                    <h3 class="text-base font-medium text-white">Screen-Free Reset</h3>
-                    <p class="text-sm text-slate-400 mt-1">Step away from desk completely.</p>
-                </div>
-
-                <!-- Timeline Item (Deep Work) -->
-                <div class="relative pl-6 bg-dark-800/50 p-4 rounded-xl ml-4 border border-dark-700">
-                    <div class="absolute -left-[25px] top-5 h-4 w-4 rounded-full border-2 border-dark-900 bg-accent-500"></div>
-                    <div class="text-xs font-bold text-accent-400 mb-1 tracking-wider">11:30 AM</div>
-                    <h3 class="text-base font-medium text-white">Deep Work Block 1</h3>
-                    <p class="text-sm text-slate-400 mt-1">BMC / BIDA Concepts.</p>
-                </div>
-
-                <!-- Timeline Item -->
-                <div class="relative pl-6">
-                    <div class="absolute -left-[9px] top-1 h-4 w-4 rounded-full border-2 border-dark-900 bg-slate-400"></div>
-                    <div class="text-xs font-bold text-accent-400 mb-1 tracking-wider">1:00 PM</div>
-                    <h3 class="text-base font-medium text-white">Lunch & Reset</h3>
-                </div>
-
-                <!-- Timeline Item (Deep Work) -->
-                <div class="relative pl-6 bg-dark-800/50 p-4 rounded-xl ml-4 border border-dark-700">
-                    <div class="absolute -left-[25px] top-5 h-4 w-4 rounded-full border-2 border-dark-900 bg-accent-500"></div>
-                    <div class="text-xs font-bold text-accent-400 mb-1 tracking-wider">2:00 PM</div>
-                    <h3 class="text-base font-medium text-white">Deep Work Block 2</h3>
-                    <p class="text-sm text-slate-400 mt-1">SQL Syntax & Active Practice.</p>
-                </div>
-
-                <!-- Timeline Item -->
-                <div class="relative pl-6">
-                    <div class="absolute -left-[9px] top-1 h-4 w-4 rounded-full border-2 border-dark-900 bg-emerald-400"></div>
-                    <div class="text-xs font-bold text-emerald-400 mb-1 tracking-wider">3:30 PM</div>
-                    <h3 class="text-base font-medium text-white">Rest + Breathe</h3>
-                    <p class="text-sm text-slate-400 mt-1">90 minutes to completely decompress.</p>
-                </div>
-
-                <!-- Timeline Item -->
-                <div class="relative pl-6">
-                    <div class="absolute -left-[9px] top-1 h-4 w-4 rounded-full border-2 border-dark-900 bg-slate-400"></div>
-                    <div class="text-xs font-bold text-accent-400 mb-1 tracking-wider">5:00 PM</div>
-                    <h3 class="text-base font-medium text-white">Meeting</h3>
-                </div>
-
-                <!-- Timeline Item -->
-                <div class="relative pl-6">
-                    <div class="absolute -left-[9px] top-1 h-4 w-4 rounded-full border-2 border-dark-900 bg-slate-400"></div>
-                    <div class="text-xs font-bold text-accent-400 mb-1 tracking-wider">6:00 PM</div>
-                    <h3 class="text-base font-medium text-white">Head to Work</h3>
-                </div>
-
-                <!-- Timeline Item -->
-                <div class="relative pl-6">
-                    <div class="absolute -left-[9px] top-1 h-4 w-4 rounded-full border-2 border-dark-900 bg-slate-400"></div>
-                    <div class="text-xs font-bold text-slate-400 mb-1 tracking-wider">11:00 PM</div>
-                    <h3 class="text-base font-medium text-slate-300">Home + Sleep</h3>
-                    <p class="text-sm text-slate-500 mt-1">Wind down, no tech.</p>
-                </div>
-
-            </div>
-        </div>
-
-        <!-- TAB 2: 10-WEEK PLAN -->
-        <div id="curriculum" class="tab-content">
-            <div class="flex justify-between items-end mb-6">
-                <h2 class="text-xl font-semibold text-slate-200">The 10-Week Sprint</h2>
-                <span id="progress-text" class="text-xs font-bold text-accent-400 bg-dark-800 py-1 px-2 rounded">0/10 Done</span>
-            </div>
-            
-            <div class="space-y-3" id="task-list">
-                <!-- Javascript will inject tasks here to keep HTML clean and avoid repetition -->
-            </div>
-        </div>
-
-    </main>
-
-    <script>
-        // Data for the 10-Week Plan
-        const weeksData = [
-            { id: 1, title: "Week 1: Quick Wins", desc: "Finish BMC & SQL Basics" },
-            { id: 2, title: "Week 2: SQL Mastery", desc: "Subqueries, CTEs, Window Functions" },
-            { id: 3, title: "Week 3: Data Modeling", desc: "BIDA Power Query, relationships" },
-            { id: 4, title: "Week 4: Visuals", desc: "Power BI charts, interactive reports" },
-            { id: 5, title: "Week 5: DAX Logic", desc: "Calculated columns, measures, time intelligence" },
-            { id: 6, title: "Week 6: Project 1", desc: "Financial Performance Dashboard" },
-            { id: 7, title: "Week 7: PL-300 Prep", desc: "Data Prep & Modeling domains" },
-            { id: 8, title: "Week 8: PL-300 Prep", desc: "Visualize Data & Workspaces domains, Mock Exams" },
-            { id: 9, title: "Week 9: Project 2", desc: "U.S. Macroeconomic Dashboard" },
-            { id: 10, title: "Week 10: Execution", desc: "Sit for the PL-300 Exam & Update Portfolio" }
-        ];
-
-        // Tab Switching Logic
-        function switchTab(tabId) {
-            // Hide all tabs
-            document.querySelectorAll('.tab-content').forEach(el => {
-                el.classList.remove('active');
-            });
-            
-            // Show selected tab
-            document.getElementById(tabId).classList.add('active');
-            
-            // Update button styles
-            const btnRoutine = document.getElementById('tab-routine');
-            const btnCurriculum = document.getElementById('tab-curriculum');
-            
-            if (tabId === 'routine') {
-                btnRoutine.className = "flex-1 py-2 px-4 rounded-lg text-sm font-semibold transition-all duration-200 bg-accent-500 text-white shadow";
-                btnCurriculum.className = "flex-1 py-2 px-4 rounded-lg text-sm font-semibold transition-all duration-200 text-slate-400 hover:text-white";
-            } else {
-                btnCurriculum.className = "flex-1 py-2 px-4 rounded-lg text-sm font-semibold transition-all duration-200 bg-accent-500 text-white shadow";
-                btnRoutine.className = "flex-1 py-2 px-4 rounded-lg text-sm font-semibold transition-all duration-200 text-slate-400 hover:text-white";
-            }
-        }
-
-        // Initialize and Render 10-Week List
-        function initCurriculum() {
-            const taskList = document.getElementById('task-list');
-            // Retrieve saved progress from LocalStorage
-            const savedProgress = JSON.parse(localStorage.getItem('growthDashboardProgress')) || {};
-
-            weeksData.forEach(week => {
-                const isChecked = savedProgress[`week-${week.id}`] ? 'checked' : '';
-                const textClass = isChecked ? 'completed-text' : 'text-white';
-                const descClass = isChecked ? 'completed-text' : 'text-slate-400';
-
-                const html = `
-                    <label class="flex items-start bg-dark-800 p-4 rounded-xl border border-dark-700 cursor-pointer hover:bg-dark-700/50 transition-colors">
-                        <div class="flex-shrink-0 mt-1 mr-4">
-                            <input type="checkbox" class="custom-checkbox week-checkbox" data-id="${week.id}" ${isChecked}>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="text-base font-semibold ${textClass} title-text" id="title-${week.id}">${week.title}</h3>
-                            <p class="text-sm mt-1 leading-snug ${descClass} desc-text" id="desc-${week.id}">${week.desc}</p>
-                        </div>
-                    </label>
-                `;
-                taskList.insertAdjacentHTML('beforeend', html);
-            });
-
-            updateProgressText();
-            attachCheckboxListeners();
-        }
-
-        // Handle Checkbox Toggles
-        function attachCheckboxListeners() {
-            const checkboxes = document.querySelectorAll('.week-checkbox');
-            checkboxes.forEach(box => {
-                box.addEventListener('change', function() {
-                    const id = this.getAttribute('data-id');
-                    const titleEl = document.getElementById(`title-${id}`);
-                    const descEl = document.getElementById(`desc-${id}`);
-                    
-                    if (this.checked) {
-                        titleEl.classList.replace('text-white', 'completed-text');
-                        descEl.classList.replace('text-slate-400', 'completed-text');
-                    } else {
-                        titleEl.classList.replace('completed-text', 'text-white');
-                        descEl.classList.replace('completed-text', 'text-slate-400');
-                    }
-                    
-                    saveProgress();
-                    updateProgressText();
-                });
-            });
-        }
-
-        // Save to LocalStorage
-        function saveProgress() {
-            const checkboxes = document.querySelectorAll('.week-checkbox');
-            const progress = {};
-            checkboxes.forEach(box => {
-                const id = box.getAttribute('data-id');
-                progress[`week-${id}`] = box.checked;
-            });
-            localStorage.setItem('growthDashboardProgress', JSON.stringify(progress));
-        }
-
-        // Update top counter (e.g., "3/10 Done")
-        function updateProgressText() {
-            const checkboxes = document.querySelectorAll('.week-checkbox');
-            const total = checkboxes.length;
-            const completed = Array.from(checkboxes).filter(box => box.checked).length;
-            
-            const progressLabel = document.getElementById('progress-text');
-            progressLabel.textContent = `${completed}/${total} Done`;
-            
-            if (completed === total) {
-                progressLabel.classList.remove('text-accent-400');
-                progressLabel.classList.add('text-emerald-400');
-            } else {
-                progressLabel.classList.remove('text-emerald-400');
-                progressLabel.classList.add('text-accent-400');
-            }
-        }
-
-        // Run on load
-        window.addEventListener('DOMContentLoaded', () => {
-            initCurriculum();
-        });
-    </script>
+/* ---------- Clock ---------- */
+function tick(){
+ var d=new Date();
+ $("clock").textContent=d.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"});
+ $("date").textContent=d.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric",year:"numeric"});
+ renderRoutine();
+ if(iso(d)!==tick.last){tick.last=iso(d);renderPlan()}
+}
+renderPlan();tick();tab(sget("tab","routine"));
+setInterval(tick,30000);
+document.addEventListener("visibilitychange",function(){if(!document.hidden)tick()});
+</script>
 </body>
 </html>
