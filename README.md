@@ -1,5 +1,7 @@
 # Focus & Growth
 
+[![CI](https://github.com/Speedkelvyn/Growthhub/actions/workflows/ci.yml/badge.svg)](https://github.com/Speedkelvyn/Growthhub/actions/workflows/ci.yml)
+
 A personal dashboard that turns goals into a daily routine and a 10-week study sprint, covering Power BI (PL-300), SQL and analytics skills.
 
 **Live app:** https://speedkelvyn.github.io/Growthhub/
@@ -27,3 +29,14 @@ Standard library only. Tests: `python -m pytest tests`.
 
 ## Built with
 HTML, CSS and vanilla JavaScript in a single file, hosted on GitHub Pages.
+
+## Development
+
+```bash
+pip install ruff pytest
+ruff check . && ruff format --check .   # lint and formatting
+pytest -q                               # tests
+npx html-validate@8.24.1 *.html         # HTML validation
+```
+
+Style is set by `ruff.toml`, `.prettierrc.json`, `.htmlvalidate.json` and `.editorconfig`; GitHub Actions runs the same checks on every push.

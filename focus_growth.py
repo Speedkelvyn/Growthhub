@@ -17,6 +17,7 @@ saved to a small JSON file.
 
 Options: --progress FILE (default focus_growth_progress.json next to this script).
 """
+
 from __future__ import annotations
 
 import argparse
@@ -35,14 +36,32 @@ SPRINT_DAYS = 70  # 10 weeks; the page counts the sprint as ending 69 days after
 # --------------------------------------------------------------------------- data from the page
 
 
+def _js_array(text: str, name: str) -> list:
+    """Read a `var NAME = [...]` literal from the page as Python data.
+
+    Handles both compact and formatted JavaScript: object keys may be quoted or bare,
+    strings single- or double-quoted, with or without trailing commas.
+    """
+    m = re.search(rf"var {name}\s*=\s*(\[.*?\]);\s*\n", text, re.S)
+    if not m:
+        raise ValueError(f"{name} not found in index.html")
+    src = m.group(1)
+    src = re.sub(r"'([^'\\]*)'", lambda q: json.dumps(q.group(1)), src)  # 'x' -> "x"
+    src = re.sub(r"([{,]\s*)([A-Za-z_]\w*)\s*:", r'\1"\2":', src)  # key: -> "key":
+    src = re.sub(r",(\s*[\]}])", r"\1", src)  # trailing commas
+    return json.loads(src)
+
+
 def load_data(html_path: pathlib.Path = HERE / "index.html") -> tuple[list[dict], list[dict]]:
     """Return (routine blocks, sprint weeks) as defined in the web page."""
     text = html_path.read_text(encoding="utf-8")
-    blocks_src = re.search(r"var BLOCKS=\[(.*?)\];", text, re.S).group(1)
-    blocks = [{"start": int(s), "title": t, "note": n, "kind": k}
-              for s, t, n, k in re.findall(r'\{s:(\d+),t:"([^"]*)",n:"([^"]*)",k:"([^"]*)"\}', blocks_src)]
-    weeks = json.loads(re.search(r"var WEEKS=(\[.*?\]);\s*\n", text, re.S).group(1))
-    weeks = [{"title": w["t"], "days": [{"day": d["n"], "task": d["x"]} for d in w["d"]]} for w in weeks]
+    blocks = [
+        {"start": b["s"], "title": b["t"], "note": b["n"], "kind": b["k"]} for b in _js_array(text, "BLOCKS")
+    ]
+    weeks = [
+        {"title": w["t"], "days": [{"day": d["n"], "task": d["x"]} for d in w["d"]]}
+        for w in _js_array(text, "WEEKS")
+    ]
     if not blocks or len(weeks) != 10:
         raise ValueError("could not read the routine and 10-week plan from index.html")
     return blocks, weeks
@@ -69,8 +88,13 @@ def block_progress(blocks: list[dict], minute: int) -> dict:
     start = blocks[ci]["start"]
     end = blocks[0]["start"] + 1440 if ci == len(blocks) - 1 else nxt["start"]
     m = minute + 1440 if (minute < blocks[0]["start"] and ci == len(blocks) - 1) else minute
-    return {"index": ci, "block": blocks[ci], "next": nxt, "left": end - m,
-            "pct": max(0.0, min(100.0, (m - start) / (end - start) * 100))}
+    return {
+        "index": ci,
+        "block": blocks[ci],
+        "next": nxt,
+        "left": end - m,
+        "pct": max(0.0, min(100.0, (m - start) / (end - start) * 100)),
+    }
 
 
 def sprint_week(start: dt.date, today: dt.date | None = None) -> int:
@@ -106,9 +130,17 @@ class Progress:
         return self.start
 
     def save(self) -> None:
-        self.path.write_text(json.dumps({"start": self.start.isoformat() if self.start else None,
-                                         "days": {k: v for k, v in self.days.items() if v},
-                                         "routine": self.routine}, indent=2), encoding="utf-8")
+        self.path.write_text(
+            json.dumps(
+                {
+                    "start": self.start.isoformat() if self.start else None,
+                    "days": {k: v for k, v in self.days.items() if v},
+                    "routine": self.routine,
+                },
+                indent=2,
+            ),
+            encoding="utf-8",
+        )
 
 
 # --------------------------------------------------------------------------- views
@@ -170,17 +202,36 @@ def show_week(weeks, prog: Progress, week: int) -> None:
 def status(weeks, prog: Progress) -> None:
     start = prog.ensure_start()
     total = sum(len(w["days"]) for w in weeks)
-    done = sum(1 for w_i, w in enumerate(weeks, 1) for d_i in range(len(w["days"])) if prog.days.get(day_key(w_i, d_i)))
+    done = sum(
+        1
+        for w_i, w in enumerate(weeks, 1)
+        for d_i in range(len(w["days"]))
+        if prog.days.get(day_key(w_i, d_i))
+    )
     today = dt.date.today()
     end = start + dt.timedelta(days=SPRINT_DAYS - 1)
     left = (end - today).days
     cw = sprint_week(start)
-    print(f"\nSprint started {start:%b %d, %Y} · {'not started yet' if cw == 0 else f'week {min(cw, 10)} of 10'}")
+    print(
+        f"\nSprint started {start:%b %d, %Y} · {'not started yet' if cw == 0 else f'week {min(cw, 10)} of 10'}"
+    )
     pct = round(done / total * 100)
     print(f"  {'█' * (pct // 5)}{'░' * (20 - pct // 5)}  {done}/{total} sprint days complete ({pct}%)")
-    print("  " + (f"Sprint ends in {left} days" if left > 0 else "Final day today" if left == 0 else f"Sprint ended {end:%b %d}"))
-    behind = [i for i in range(1, min(cw, 11)) if i < cw and
-              sum(bool(prog.days.get(day_key(i, d))) for d in range(6)) < 6]
+    print(
+        "  "
+        + (
+            f"Sprint ends in {left} days"
+            if left > 0
+            else "Final day today"
+            if left == 0
+            else f"Sprint ended {end:%b %d}"
+        )
+    )
+    behind = [
+        i
+        for i in range(1, min(cw, 11))
+        if i < cw and sum(bool(prog.days.get(day_key(i, d))) for d in range(6)) < 6
+    ]
     if behind:
         print(f"  Behind on week{'s' if len(behind) > 1 else ''}: {', '.join(map(str, behind))}")
     print()
@@ -192,7 +243,16 @@ def export(weeks, prog: Progress, out: pathlib.Path) -> None:
     for wi, w in enumerate(weeks, 1):
         a, _ = week_dates(start, wi)
         for di, d in enumerate(w["days"]):
-            rows.append((wi, w["title"], d["day"], a + dt.timedelta(days=di), d["task"], bool(prog.days.get(day_key(wi, di)))))
+            rows.append(
+                (
+                    wi,
+                    w["title"],
+                    d["day"],
+                    a + dt.timedelta(days=di),
+                    d["task"],
+                    bool(prog.days.get(day_key(wi, di))),
+                )
+            )
     ext = out.suffix.lower()
     if ext == ".csv":
         with out.open("w", newline="", encoding="utf-8") as f:
@@ -204,9 +264,15 @@ def export(weeks, prog: Progress, out: pathlib.Path) -> None:
         stamp = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
         lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Growthhub//Focus & Growth//EN"]
         for r in rows:
-            lines += ["BEGIN:VEVENT", f"UID:growthhub-w{r[0]}-{r[2]}-{start:%Y%m%d}@speedkelvyn.github.io", f"DTSTAMP:{stamp}",
-                      f"DTSTART;VALUE=DATE:{r[3]:%Y%m%d}", f"DTEND;VALUE=DATE:{r[3] + dt.timedelta(days=1):%Y%m%d}",
-                      f"SUMMARY:Week {r[0]} · {r[4].replace(',', chr(92) + ',')}", "END:VEVENT"]
+            lines += [
+                "BEGIN:VEVENT",
+                f"UID:growthhub-w{r[0]}-{r[2]}-{start:%Y%m%d}@speedkelvyn.github.io",
+                f"DTSTAMP:{stamp}",
+                f"DTSTART;VALUE=DATE:{r[3]:%Y%m%d}",
+                f"DTEND;VALUE=DATE:{r[3] + dt.timedelta(days=1):%Y%m%d}",
+                f"SUMMARY:Week {r[0]} · {r[4].replace(',', chr(92) + ',')}",
+                "END:VEVENT",
+            ]
         lines.append("END:VCALENDAR")
         out.write_text("\r\n".join(lines) + "\r\n", encoding="utf-8")
     else:
@@ -224,8 +290,24 @@ def export(weeks, prog: Progress, out: pathlib.Path) -> None:
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("command", nargs="?", default="now",
-                    choices=["now", "routine", "check", "uncheck", "start", "plan", "week", "done", "undone", "status", "export"])
+    ap.add_argument(
+        "command",
+        nargs="?",
+        default="now",
+        choices=[
+            "now",
+            "routine",
+            "check",
+            "uncheck",
+            "start",
+            "plan",
+            "week",
+            "done",
+            "undone",
+            "status",
+            "export",
+        ],
+    )
     ap.add_argument("args", nargs="*")
     ap.add_argument("--progress", type=pathlib.Path, default=HERE / "focus_growth_progress.json")
     a = ap.parse_args(argv)
@@ -256,7 +338,9 @@ def main(argv=None) -> int:
             show_week(weeks, prog, w)
         status(weeks, prog)
     elif a.command == "week":
-        show_week(weeks, prog, max(1, min(10, int(a.args[0]) if a.args else sprint_week(prog.ensure_start()) or 1)))
+        show_week(
+            weeks, prog, max(1, min(10, int(a.args[0]) if a.args else sprint_week(prog.ensure_start()) or 1))
+        )
     elif a.command in ("done", "undone"):
         if len(a.args) < 2 or a.args[1].title()[:3] not in DAY_NAMES:
             raise SystemExit("usage: done WEEK DAY   e.g. done 4 Tue")
